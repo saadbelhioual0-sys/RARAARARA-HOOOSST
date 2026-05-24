@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Admin Panel - JAGWAR HOST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100;14..32,200;14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e3a5f;
+            --primary-blue-light: #2c5282;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.3);
+            --dark-bg: #0a0a0a;
+            --dark-card: #0f0f0f;
+            --dark-card-hover: #151515;
+            --dark-border: #1f1f1f;
+            --text-white: #ffffff;
+            --text-gray: #9ca3af;
+            --text-dark-gray: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gradient-primary: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%);
+            --gradient-danger: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+            --gradient-success: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+            --gradient-warning: linear-gradient(135deg, #92400e 0%, #f59e0b 100%);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f0f1a 50%, #0a0a0a 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .admin-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .admin-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08), transparent 60%),
+                        radial-gradient(circle at 80% 70%, rgba(30, 58, 95, 0.08), transparent 60%);
+        }
+
+        .grid-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: var(--accent-blue);
+            filter: drop-shadow(0 0 10px var(--accent-blue));
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 5px var(--accent-blue)); }
+            50% { filter: drop-shadow(0 0 20px var(--accent-blue)); }
+        }
+
+        .admin-badge {
+            background: var(--gradient-primary);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            color: var(--danger);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Admin Container */
+        .admin-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-blue);
+        }
+
+        .stat-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon i {
+            font-size: 1.6rem;
+            color: var(--accent-blue);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            color: var(--text-gray);
+            font-size: 0.75rem;
+        }
+
+        /* Admin Cards */
+        .admin-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .admin-card:nth-child(1) { animation-delay: 0.1s; }
+        .admin-card:nth-child(2) { animation-delay: 0.2s; }
+        .admin-card:nth-child(3) { animation-delay: 0.3s; }
+        .admin-card:nth-child(4) { animation-delay: 0.4s; }
+        .admin-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--dark-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .card-header h2 i {
+            color: var(--accent-blue);
+        }
+
+        .card-badge {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Forms */
+        .admin-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.9rem 1.2rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--dark-border);
+            border-radius: 14px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-form input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 14px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Premium Button */
+        .btn-premium {
+            background: var(--gradient-warning);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-premium:hover {
+            transform: scale(1.05);
+        }
+
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .data-table th {
+            color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .data-table tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Badges */
+        .badge-premium {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-free {
+            background: var(--text-gray);
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+        }
+
+        .badge-running {
+            color: var(--success);
+        }
+
+        .badge-stopped {
+            color: var(--danger);
+        }
+
+        .badge-success {
+            color: var(--success);
+        }
+
+        .badge-failed {
+            color: var(--danger);
+        }
+
+        /* Status Indicators */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-dot.running { background: var(--success); box-shadow: 0 0 5px var(--success); }
+        .status-dot.stopped { background: var(--danger); }
+        .status-dot.starting { background: var(--warning); animation: blink 1s infinite; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Logs Table */
+        .logs-table .user-agent {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ip-address {
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Footer */
+        .footer {
+            background: #050505;
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--dark-border);
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dark-border);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-container {
+                padding: 0.8rem 1rem;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+                padding-top: 1rem;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .admin-container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-form {
+                flex-direction: column;
+            }
+
+            .admin-form input {
+                width: 100%;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-bg">
+        <div class="grid-pattern"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-tiger"></i>
+                <span>JAGWAR<span style="color: var(--accent-blue);">ADMIN</span></span>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="nav-links">
+                <span class="admin-badge"><i class="fas fa-crown"></i> Administrator</span>
+                <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>{{ users|length }}</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-server"></i></div>
+                <div class="stat-info">
+                    <h3>{{ servers|length }}</h3>
+                    <p>Total Servers</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-gem"></i></div>
+                <div class="stat-info">
+                    <h3>{{ users|selectattr('is_premium', 'equalto', true)|list|length }}</h3>
+                    <p>Premium Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-ban"></i></div>
+                <div class="stat-info">
+                    <h3>{{ failed_logs|length }}</h3>
+                    <p>Failed Attempts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add User Section -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-user-plus"></i> Add New User</h2>
+                <span class="card-badge"><i class="fas fa-shield-alt"></i> Admin Only</span>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/admin/add_user" class="admin-form">
+                    <input type="text" name="username" placeholder="Username" required autocomplete="off">
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Create User</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Users Management -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-users"></i> All Users</h2>
+                <span class="card-badge"><i class="fas fa-database"></i> {{ users|length }} Records</span>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Type</th>
+                                <th>Max Servers</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>#{{ user.id }}</td>
+                                <td>
+                                    <i class="fas fa-user" style="color: var(--accent-blue); margin-right: 0.5rem;"></i>
+                                    {{ user.username }}
+                                </td>
+                                <td>
+                                    {% if user.is_premium %}
+                                    <span class="badge-premium"><i class="fas fa-gem"></i> PREMIUM</span>
+                                    {% else %}
+                                    <span class="badge-free"><i class="fas fa-star"></i> FREE</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.max_servers }}</td>
+                                <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+                                <td>
+                                    {% if not user.is_premium and user.username != 'JAGWARGG' %}
+                                    <form method="POST" action="/admin/make_premium/{{ user.id }}" style="display:inline">
+                                        <button type="submit" class="btn-premium"><i class="fas fa-crown"></i> Make Premium</button>
+                                    </form>
+                                    {% elif user.is_premium %}
+                                    <span style="color: var(--success); font-size: 0.7rem;"><i class="fas fa-check"></i> Premium Active</span>
+                                    {% else %}
+                                    <span style="color: var(--text-gray); font-size: 0.7rem;"><i class="fas fa-lock"></i> System Admin</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servers Overview -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-server"></i> All Servers</h2>
+                <span class="card-badge"><i class="fas fa-database"></i> {{ servers|length }} Records</span>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Server Name</th>
+                                <th>Owner ID</th>
+                                <th>Status</th>
+                                <th>CPU</th>
+                                <th>RAM</th>
+                                <th>Port</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for server in servers %}
+                            <tr>
+                                <td>#{{ server.id }}</td>
+                                <td>
+                                    <i class="fab fa-python" style="color: var(--accent-blue); margin-right: 0.5rem;"></i>
+                                    {{ server.name }}
+                                </td>
+                                <td>{{ server.owner_id }}</td>
+                                <td>
+                                    <span class="status-dot {{ server.status }}"></span>
+                                    <span class="badge-{{ server.status }}">{{ server.status }}</span>
+                                </td>
+                                <td>{{ server.cpu_usage }}</td>
+                                <td>{{ server.ram_usage }}</td>
+                                <td><span class="ip-address">{{ server.port or 'N/A' }}</span></td>
+                                <td>{{ server.created_at.strftime('%Y-%m-%d') if server.created_at else 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if servers|length == 0 %}
+                <div class="empty-state">
+                    <i class="fas fa-database"></i>
+                    <p>No servers found</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Failed Login Attempts -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-ban"></i> Failed Login Attempts</h2>
+                <span class="card-badge"><i class="fas fa-exclamation-triangle"></i> Security Alert</span>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table class="data-table logs-table">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Username Attempted</th>
+                                <th>User Agent</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in failed_logs %}
+                            <tr>
+                                <td><span class="ip-address"><i class="fas fa-network-wired"></i> {{ log.ip }}</span></td>
+                                <td><span style="color: var(--warning);">{{ log.username_attempted or 'Unknown' }}</span></td>
+                                <td class="user-agent" title="{{ log.user_agent }}">{{ log.user_agent[:60] }}{% if log.user_agent|length > 60 %}...{% endif %}</td>
+                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if failed_logs|length == 0 %}
+                <div class="empty-state">
+                    <i class="fas fa-shield-alt"></i>
+                    <p>No failed login attempts</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Login History -->
+        <div class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Login History</h2>
+                <span class="card-badge"><i class="fas fa-chart-line"></i> Activity Log</span>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table class="data-table logs-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>User Agent</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in login_logs %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-user" style="margin-right: 0.5rem;"></i>
+                                    {{ log.username }}
+                                </td>
+                                <td><span class="ip-address">{{ log.ip }}</span></td>
+                                <td>
+                                    {% if log.success %}
+                                    <span class="badge-success"><i class="fas fa-check-circle"></i> Success</span>
+                                    {% else %}
+                                    <span class="badge-failed"><i class="fas fa-times-circle"></i> Failed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="user-agent" title="{{ log.user_agent }}">{{ log.user_agent[:60] }}{% if log.user_agent|length > 60 %}...{% endif %}</td>
+                                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if login_logs|length == 0 %}
+                <div class="empty-state">
+                    <i class="fas fa-chart-line"></i>
+                    <p>No login history available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>جميع الحقوق محفوظة JAGWAR 2026 | All rights reserved © 2026 JAGWAR HOST | Secure Admin Panel v2.0</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+        }
+
+        // Auto-refresh stats every 15 seconds (optional)
+        let refreshInterval = null;
+        
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                fetch(window.location.href)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        // Update stats numbers
+                        const newStats = doc.querySelectorAll('.stat-info h3');
+                        const currentStats = document.querySelectorAll('.stat-info h3');
+                        if (newStats.length === currentStats.length) {
+                            currentStats.forEach((stat, i) => {
+                                if (newStats[i] && stat.innerText !== newStats[i].innerText) {
+                                    stat.style.transform = 'scale(1.1)';
+                                    stat.innerText = newStats[i].innerText;
+                                    setTimeout(() => { stat.style.transform = 'scale(1)'; }, 200);
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => console.log('Refresh failed:', err));
+            }, 15000);
+        }
+
+        // Start auto-refresh
+        startAutoRefresh();
+
+        // Add animation to table rows on hover
+        const rows = document.querySelectorAll('.data-table tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transition = 'all 0.3s ease';
+            });
+        });
+    </script>
+</body>
+</html>
