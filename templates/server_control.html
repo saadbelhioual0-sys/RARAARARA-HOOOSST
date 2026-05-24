@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Control Panel - {{ server.name }} | JAGWAR HOST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100;14..32,200;14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e3a5f;
+            --accent-blue: #3b82f6;
+            --dark-bg: #0a0a0a;
+            --dark-card: #0f0f0f;
+            --dark-border: #1f1f1f;
+            --text-white: #ffffff;
+            --text-gray: #9ca3af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gradient-primary: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%);
+            --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f0f1a 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .server-name-badge {
+            background: rgba(59, 130, 246, 0.15);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back, .btn-logout {
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .btn-back:hover, .btn-logout:hover {
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Control Container */
+        .control-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Info Bar */
+        .info-bar {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 20px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .info-item i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+
+        /* Tabs */
+        .control-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 2rem;
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 50px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .tab-btn i {
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Console Section */
+        .control-card {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            padding: 1.5rem;
+        }
+
+        .console-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .console-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .start-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .stop-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .restart-btn {
+            background: var(--warning);
+            color: white;
+        }
+
+        .clear-btn {
+            background: var(--text-gray);
+            color: white;
+        }
+
+        .console-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .console-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* Console Output */
+        .console-container {
+            background: #050505;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--dark-border);
+        }
+
+        .console-output {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: #0a0a0a;
+        }
+
+        .console-line {
+            padding: 0.2rem 0;
+            color: #00ff9d;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        .console-line.error {
+            color: #ff6b6b;
+        }
+
+        .console-line.warning {
+            color: #ffd966;
+        }
+
+        .console-input-line {
+            display: flex;
+            align-items: center;
+            background: #0f0f0f;
+            border-top: 1px solid var(--dark-border);
+            padding: 0.6rem 1rem;
+        }
+
+        .console-prompt {
+            color: #00ff9d;
+            font-weight: bold;
+            margin-right: 0.5rem;
+            font-family: monospace;
+        }
+
+        #console-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: monospace;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        #console-send {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #console-send:hover {
+            transform: scale(1.05);
+        }
+
+        /* Files Section */
+        .files-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .files-btn {
+            padding: 0.7rem 1.3rem;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid var(--dark-border);
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .files-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* File Browser */
+        .file-browser {
+            min-height: 450px;
+        }
+
+        .breadcrumb {
+            padding: 0.8rem 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .breadcrumb-item {
+            color: var(--accent-blue);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb-item:hover {
+            text-decoration: underline;
+        }
+
+        .file-list {
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--dark-border);
+            transition: background 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .file-info i {
+            font-size: 1.2rem;
+            width: 28px;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+        }
+
+        .file-size {
+            color: var(--text-gray);
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .file-action {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .file-action:hover {
+            color: var(--accent-blue);
+        }
+
+        .file-action.delete:hover {
+            color: var(--danger);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 900px;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .modal-close, .modal-close2 {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover, .modal-close2:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        #editor-textarea {
+            width: 100%;
+            height: 400px;
+            font-family: 'Monaco', monospace;
+            font-size: 13px;
+            background: #0a0a0a;
+            color: white;
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 1rem;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--dark-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .save-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: var(--text-gray);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #create-name {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--dark-bg);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-gray);
+        }
+
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            background: #050505;
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--dark-border);
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0.8rem 1rem;
+            }
+
+            .control-container {
+                padding: 1rem;
+            }
+
+            .info-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .console-actions {
+                justify-content: center;
+            }
+
+            .files-actions {
+                justify-content: center;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .server-name-badge {
+                display: none;
+            }
+
+            .console-output {
+                height: 300px;
+                font-size: 0.7rem;
+            }
+
+            .file-item {
+                flex-wrap: wrap;
+            }
+
+            .file-actions {
+                margin-top: 0.5rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-tiger"></i>
+                <span>JAGWAR<span style="color: var(--accent-blue);">CTRL</span></span>
+            </div>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="nav-links">
+                <span class="server-name-badge"><i class="fas fa-server"></i> {{ server.name }}</span>
+                <a href="/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
+                <a href="/logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="control-container">
+        <!-- Info Bar -->
+        <div class="info-bar">
+            <div class="info-item"><i class="fas fa-microchip"></i> CPU: <strong id="cpu-usage">{{ stats.cpu }}</strong></div>
+            <div class="info-item"><i class="fas fa-memory"></i> RAM: <strong id="ram-usage">{{ stats.ram }}</strong></div>
+            <div class="info-item"><i class="fas fa-plug"></i> Port: <strong>{{ server.port or 'Not assigned' }}</strong></div>
+            <div class="info-item"><i class="fab fa-python"></i> Language: <strong>Python 3.11</strong></div>
+            <div class="info-item"><i class="fas fa-hourglass-half"></i> Status: <strong class="status-{{ server.status }}">{{ server.status }}</strong></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="control-tabs">
+            <button class="tab-btn active" data-tab="console"><i class="fas fa-terminal"></i> Console</button>
+            <button class="tab-btn" data-tab="files"><i class="fas fa-folder"></i> Files</button>
+        </div>
+
+        <!-- Console Tab -->
+        <div id="console-tab" class="tab-content active">
+            <div class="control-card">
+                <div class="console-actions">
+                    <button id="btn-start" class="console-btn start-btn" {% if server.status == 'running' %}disabled{% endif %}>
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button id="btn-stop" class="console-btn stop-btn" {% if server.status != 'running' %}disabled{% endif %}>
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                    <button id="btn-restart" class="console-btn restart-btn">
+                        <i class="fas fa-sync-alt"></i> Restart
+                    </button>
+                    <button id="btn-clear" class="console-btn clear-btn">
+                        <i class="fas fa-eraser"></i> Clear
+                    </button>
+                </div>
+                <div class="console-container">
+                    <div id="console-output" class="console-output">
+                        <div class="console-line">> ╔════════════════════════════════════════╗</div>
+                        <div class="console-line">> ║     JAGWAR HOST - REAL CONSOLE        ║</div>
+                        <div class="console-line">> ╚════════════════════════════════════════╝</div>
+                        <div class="console-line">> Server: {{ server.name }}</div>
+                        <div class="console-line">> Status: {{ server.status }}</div>
+                        <div class="console-line">> Type commands below to execute in container</div>
+                        <div class="console-line">> ---</div>
+                    </div>
+                    <div class="console-input-line">
+                        <span class="console-prompt">$</span>
+                        <input type="text" id="console-input" placeholder="Type command and press Enter..." autocomplete="off">
+                        <button id="console-send"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Files Tab -->
+        <div id="files-tab" class="tab-content">
+            <div class="control-card">
+                <div class="files-actions">
+                    <button id="upload-file-btn" class="files-btn"><i class="fas fa-upload"></i> Upload File</button>
+                    <button id="upload-folder-btn" class="files-btn"><i class="fas fa-folder-open"></i> Upload Folder</button>
+                    <button id="create-file-btn" class="files-btn"><i class="fas fa-file"></i> Create File</button>
+                    <button id="create-folder-btn" class="files-btn"><i class="fas fa-folder-plus"></i> Create Folder</button>
+                    <input type="file" id="file-input" style="display:none" multiple>
+                    <input type="file" id="folder-input" style="display:none" webkitdirectory directory multiple>
+                </div>
+                <div class="file-browser">
+                    <div class="breadcrumb">
+                        <span class="breadcrumb-item" data-path="">📁 root</span>
+                    </div>
+                    <div id="file-list" class="file-list">
+                        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading files...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>جميع الحقوق محفوظة JAGWAR 2026 | All rights reserved © 2026 JAGWAR HOST</p>
+    </footer>
+
+    <!-- Modals -->
+    <div id="editor-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-code"></i> File Editor</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <textarea id="editor-textarea" placeholder="Write your code here..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="save-file-btn" class="save-btn"><i class="fas fa-save"></i> Save</button>
+                <button id="close-editor-btn" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="create-modal-title">Create</h3>
+                <span class="modal-close2">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="create-name" placeholder="Enter name..." autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-create" class="save-btn">Create</button>
+                <button class="cancel-create cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Server variables
+        const SERVER_ID = {{ server.id }};
+        const SERVER_STATUS = "{{ server.status }}";
+        
+        let currentPath = '';
+        let currentEditFile = null;
+        let eventSource = null;
+        let currentCreateType = '';
+
+        // DOM Elements
+        const consoleOutput = document.getElementById('console-output');
+        const consoleInput = document.getElementById('console-input');
+        const sendBtn = document.getElementById('console-send');
+        const startBtn = document.getElementById('btn-start');
+        const stopBtn = document.getElementById('btn-stop');
+        const restartBtn = document.getElementById('btn-restart');
+        const clearBtn = document.getElementById('btn-clear');
+
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                if (tabId === 'files') loadFiles();
+            });
+        });
+
+        // Console Functions
+        function addConsoleLine(text, type = 'info') {
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            if (type === 'error') line.classList.add('error');
+            if (type === 'warning') line.classList.add('warning');
+            line.textContent = text;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function sendCommand() {
+            const command = consoleInput.value.trim();
+            if (!command) return;
+            addConsoleLine(`$ ${command}`);
+            fetch(`/server/${SERVER_ID}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `command=${encodeURIComponent(command)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.output) addConsoleLine(data.output);
+            })
+            .catch(err => addConsoleLine(`Error: ${err.message}`, 'error'));
+            consoleInput.value = '';
+        }
+
+        consoleInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendCommand(); });
+        sendBtn.addEventListener('click', sendCommand);
+
+        function startConsoleStream() {
+            if (eventSource) eventSource.close();
+            eventSource = new EventSource(`/server/${SERVER_ID}/console_stream`);
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.log) addConsoleLine(data.log);
+            };
+            eventSource.onerror = () => {
+                addConsoleLine('⚠️ Console connection lost. Reconnecting...', 'warning');
+                setTimeout(startConsoleStream, 3000);
+            };
+        }
+
+        startBtn.addEventListener('click', () => {
+            addConsoleLine('▶️ Starting server...', 'warning');
+            fetch(`/start_server/${SERVER_ID}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'started') {
+                        addConsoleLine('✅ Server started! Installing dependencies...', 'info');
+                        addConsoleLine('📦 pip install -r requirements.txt', 'info');
+                        addConsoleLine('🚀 python main.py', 'info');
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        startConsoleStream();
+                        setTimeout(() => location.reload(), 2000);
+                    } else addConsoleLine(`❌ Failed: ${data.error}`, 'error');
+                });
+        });
+
+        stopBtn.addEventListener('click', () => {
+            addConsoleLine('⏹️ Stopping server...', 'warning');
+            fetch(`/stop_server/${SERVER_ID}`, { method: 'POST' })
+                .then(() => {
+                    addConsoleLine('✅ Server stopped', 'info');
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    if (eventSource) eventSource.close();
+                    setTimeout(() => location.reload(), 1000);
+                });
+        });
+
+        restartBtn.addEventListener('click', () => {
+            addConsoleLine('🔄 Restarting server...', 'warning');
+            fetch(`/restart_server/${SERVER_ID}`, { method: 'POST' })
+                .then(() => {
+                    addConsoleLine('✅ Server restarted!', 'info');
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    if (eventSource) eventSource.close();
+                    startConsoleStream();
+                });
+        });
+
+        clearBtn.addEventListener('click', () => {
+            consoleOutput.innerHTML = '';
+            addConsoleLine('> Console cleared');
+        });
+
+        if (SERVER_STATUS === 'running') startConsoleStream();
+
+        // File Management Functions
+        async function loadFiles() {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading files...</div>';
+            try {
+                const res = await fetch(`/server/${SERVER_ID}/files?path=${encodeURIComponent(currentPath)}`);
+                const data = await res.json();
+                renderFileList(data.files);
+            } catch (err) {
+                fileList.innerHTML = '<div class="loading">Failed to load files</div>';
+            }
+        }
+
+        function renderFileList(files) {
+            const fileList = document.getElementById('file-list');
+            if (!files.length) {
+                fileList.innerHTML = '<div class="loading"><i class="fas fa-folder-open"></i> Empty folder</div>';
+                return;
+            }
+            fileList.innerHTML = '';
+            files.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                const icon = file.is_dir ? '<i class="fas fa-folder" style="color:#f59e0b"></i>' : 
+                             (file.name.endsWith('.py') ? '<i class="fab fa-python" style="color:#3b82f6"></i>' : '<i class="fas fa-file" style="color:#9ca3af"></i>');
+                item.innerHTML = `
+                    <div class="file-info" data-name="${file.name}" data-is-dir="${file.is_dir}">
+                        ${icon}
+                        <span class="file-name">${file.name}</span>
+                        ${!file.is_dir ? `<span class="file-size">(${formatBytes(file.size)})</span>` : ''}
+                    </div>
+                    <div class="file-actions">
+                        ${!file.is_dir ? `<button class="file-action edit" data-name="${file.name}"><i class="fas fa-edit"></i></button>` : ''}
+                        <button class="file-action rename" data-name="${file.name}"><i class="fas fa-i-cursor"></i></button>
+                        <button class="file-action delete" data-name="${file.name}"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                fileList.appendChild(item);
+            });
+            attachFileEvents();
+        }
+
+        function attachFileEvents() {
+            document.querySelectorAll('.file-info').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const name = el.dataset.name;
+                    const isDir = el.dataset.isDir === 'true';
+                    if (isDir) {
+                        currentPath = currentPath ? `${currentPath}/${name}` : name;
+                        updateBreadcrumb();
+                        loadFiles();
+                    } else openEditor(name);
+                });
+            });
+            document.querySelectorAll('.edit').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); openEditor(btn.dataset.name); });
+            });
+            document.querySelectorAll('.rename').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); renameFile(btn.dataset.name); });
+            });
+            document.querySelectorAll('.delete').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); deleteFile(btn.dataset.name); });
+            });
+        }
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.querySelector('.breadcrumb');
+            const parts = currentPath.split('/').filter(p => p);
+            let html = '<span class="breadcrumb-item" data-path="">📁 root</span>';
+            let path = '';
+            parts.forEach(part => {
+                path = path ? `${path}/${part}` : part;
+                html += `<span class="breadcrumb-item" data-path="${path}">📁 ${part}</span>`;
+            });
+            breadcrumb.innerHTML = html;
+            document.querySelectorAll('.breadcrumb-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    currentPath = item.dataset.path;
+                    updateBreadcrumb();
+                    loadFiles();
+                });
+            });
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function openEditor(filename) {
+            currentEditFile = filename;
+            const modal = document.getElementById('editor-modal');
+            const textarea = document.getElementById('editor-textarea');
+            try {
+                const res = await fetch(`/server/${SERVER_ID}/file/${encodeURIComponent(currentPath ? currentPath + '/' + filename : filename)}`);
+                const data = await res.json();
+                textarea.value = data.content || '';
+                modal.style.display = 'flex';
+            } catch (err) {
+                alert('Failed to open file');
+            }
+        }
+
+        document.getElementById('save-file-btn').addEventListener('click', async () => {
+            const content = document.getElementById('editor-textarea').value;
+            try {
+                await fetch(`/server/${SERVER_ID}/file/${encodeURIComponent(currentPath ? currentPath + '/' + currentEditFile : currentEditFile)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                document.getElementById('editor-modal').style.display = 'none';
+                loadFiles();
+            } catch (err) {
+                alert('Failed to save');
+            }
+        });
+
+        document.getElementById('upload-file-btn').addEventListener('click', () => document.getElementById('file-input').click());
+        document.getElementById('file-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', currentPath);
+            await fetch(`/server/${SERVER_ID}/upload`, { method: 'POST', body: formData });
+            loadFiles();
+            e.target.value = '';
+        });
+
+        document.getElementById('create-file-btn').addEventListener('click', () => {
+            currentCreateType = 'file';
+            document.getElementById('create-modal-title').textContent = 'Create New File';
+            document.getElementById('create-modal').style.display = 'flex';
+        });
+        document.getElementById('create-folder-btn').addEventListener('click', () => {
+            currentCreateType = 'folder';
+            document.getElementById('create-modal-title').textContent = 'Create New Folder';
+            document.getElementById('create-modal').style.display = 'flex';
+        });
+
+        document.getElementById('confirm-create').addEventListener('click', async () => {
+            const name = document.getElementById('create-name').value;
+            if (!name) return;
+            const url = currentCreateType === 'file' ? `/server/${SERVER_ID}/create_file` : `/server/${SERVER_ID}/create_folder`;
+            const formData = new FormData();
+            formData.append(currentCreateType === 'file' ? 'file_name' : 'folder_name', name);
+            formData.append('path', currentPath);
+            if (currentCreateType === 'file') formData.append('content', '');
+            await fetch(url, { method: 'POST', body: formData });
+            document.getElementById('create-modal').style.display = 'none';
+            document.getElementById('create-name').value = '';
+            loadFiles();
+        });
+
+        async function deleteFile(filename) {
+            if (!confirm(`Delete "${filename}"?`)) return;
+            await fetch(`/server/${SERVER_ID}/file/${encodeURIComponent(currentPath ? currentPath + '/' + filename : filename)}`, { method: 'DELETE' });
+            loadFiles();
+        }
+
+        async function renameFile(filename) {
+            const newName = prompt('New name:', filename);
+            if (!newName || newName === filename) return;
+            await fetch(`/server/${SERVER_ID}/rename/${encodeURIComponent(currentPath ? currentPath + '/' + filename : filename)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ new_name: newName })
+            });
+            loadFiles();
+        }
+
+        // Modal close handlers
+        document.querySelectorAll('.modal-close, .modal-close2, .cancel-create, #close-editor-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('editor-modal').style.display = 'none';
+                document.getElementById('create-modal').style.display = 'none';
+            });
+        });
+        window.onclick = (event) => { if (event.target.classList.contains('modal')) event.target.style.display = 'none'; };
+
+        // Mobile menu
+        document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+            document.querySelector('.nav-links')?.classList.toggle('show');
+        });
+    </script>
+</body>
+</html>
